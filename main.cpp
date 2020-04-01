@@ -6,8 +6,8 @@ Serial pc(USBTX, USBRX);
 AnalogOut Aout(DAC0_OUT);
 AnalogIn Ain(A0);
 DigitalIn  Switch(SW3);
-DigitalOut greenLED(LED1);
-DigitalOut redLED(LED2);
+DigitalOut greenLED(greenLED);
+DigitalOut redLED(redLED);
 
 int i;
 float count_ = 0;
@@ -23,18 +23,14 @@ int main(){
     for(i = 0; i < sample; i++) {
         Aout = Ain;
         ADCdata[i] = Ain;
-        wait(1./sample);
-    }
-    for(i = 0; i < sample; i++) {
         pc.printf("%1.3f\r\n", ADCdata[i]);
         if(i != 0) {
             if(ADCdata[i-1] < 0.3 && ADCdata[i] >= 0.3) count_ = count_ + 1; 
         }
+        wait(1./sample);
     }
     freq = round(count_);
     int tmp = (int) freq;
-    // pc.printf("%2.2f\r\n", freq);
-    // pc.printf("%d\r\n", tmp);
     int x = 0;
     if((int)freq >= 100) x = 100;
     else x = 10;
@@ -51,22 +47,14 @@ int main(){
                 tmp %= x;
                 x /= 10;
             }
-            // wait(1);
-            redLED = 1;
-            greenLED = 0;
+            redLED = 0;
+            greenLED = ;
         }
         else if(Switch == 1) {
             display = 0x00;
-            redLED = 0;
-            greenLED = 1;
-            // wait(1);
+            redLED = 1;
+            greenLED = 0;
         }
-
-
-        // for(float j = 0; j < 2; j += 0.001) {
-        //     Aout = 0.5 + 0.5 * sin(j * 3.141592 * freq);
-        //     wait(0.001);
-        // }
         for(float j = 0; j < freq; j +=  0.0005 / (1 / freq)) {
             Aout = 0.5 + 0.5 * sin(j * 3.141592);
             wait(0.0005);
